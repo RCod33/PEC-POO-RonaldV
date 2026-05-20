@@ -10,8 +10,10 @@ abstract public class Worker {
     private String address;
     private double salary;
     private final Date entryDate;
+    private String numeroSS;
 
-    public Worker(String name, String lastName, String secondLastName, String DNI, String address, double salary, Date entryDate) {
+    public Worker(String name, String lastName, String secondLastName, String DNI,
+                  String address, String numeroSS, double salary, Date entryDate) {
         this.name = name;
         this.lastName = lastName;
         this.secondLastName = secondLastName;
@@ -21,9 +23,28 @@ abstract public class Worker {
             throw new IllegalArgumentException("El formato de DNI es incorrecto");
         }
         this.address = address;
-        if(salary <= 0) throw new IllegalArgumentException("El salario debe de ser positivo");
+        if (!isValidNumeroSS(numeroSS)) {
+            throw new IllegalArgumentException("El formato del número de SS es incorrecto");
+        }
+        this.numeroSS = numeroSS;
+        if (salary <= 0) throw new IllegalArgumentException("El salario debe de ser positivo");
         this.salary = salary;
         this.entryDate = (entryDate != null) ? entryDate : new Date();
+    }
+
+    public String getNumeroSS() {
+        return numeroSS;
+    }
+
+    public void setNumeroSS(String numeroSS) {
+        if (!isValidNumeroSS(numeroSS)) {
+            throw new IllegalArgumentException("El formato del número de SS es incorrecto");
+        }
+        this.numeroSS = numeroSS;
+    }
+
+    private boolean isValidNumeroSS(String ss) {
+        return ss != null && ss.matches("\\d{2}/\\d{8}/\\d{2}");
     }
 
     public String getName() {

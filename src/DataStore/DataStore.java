@@ -12,6 +12,8 @@ import java.util.*;
 
 public class DataStore {
 
+    private static DataStore instance;
+
     private List<Worker> workers = new ArrayList<>();
 
     private Stock<Vehicle> vehicles = new Stock<Vehicle>();
@@ -24,8 +26,14 @@ public class DataStore {
 
     private Map<VehicleType, AssemblyLine> assemblyLines = new HashMap<>();
 
-    public DataStore() {
+    private DataStore() {
+    }
 
+    public static DataStore getInstance() {
+        if (instance == null) {
+            instance = new DataStore();
+        }
+        return instance;
     }
 
     // =========================

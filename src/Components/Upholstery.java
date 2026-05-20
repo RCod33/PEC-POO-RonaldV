@@ -58,7 +58,7 @@ public class Upholstery {
 
     @Override
     public int hashCode() {
-        return Objects.hash(color, squareMeters);
+        return Objects.hash(type, color, squareMeters);
     }
 
 }

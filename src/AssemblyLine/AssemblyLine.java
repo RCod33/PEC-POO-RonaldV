@@ -1,5 +1,6 @@
 package AssemblyLine;
 
+import DataStore.DataStore;
 import Vehicles.Vehicle;
 import Workers.Operator;
 
@@ -33,7 +34,9 @@ public class AssemblyLine {
         modules.set(phase.ordinal(), module);
     }
 
-    public void updateLine(){
+    public void updateLine() {
+
+        DataStore ds = DataStore.getInstance();
 
         for (int i = modules.size() - 1; i >= 0; --i) {
 
@@ -46,12 +49,26 @@ public class AssemblyLine {
             Vehicle car = current.getVehicle();
             AssemblyPhase phase = current.getPhase();
 
-            //Necesito separar esto a un applyPhase en assemblymodule y hacer la logica de q tiene q haber stock disponible
             if (car != null) {
                 switch (phase) {
-                    case MOTOR: car.setEngine(config.getEngine()); break;
-                    case TAPICERIA: car.setUpholstery(config.getUpholstery()); break;
-                    case RUEDAS: car.setWheel(config.getWheel()); break;
+                    case MOTOR:
+                        if (ds.getEngines().getStock(config.getEngine()) <= 0)
+                            throw new IllegalStateException("No hay motores en stock");
+                        ds.getEngines().remove(config.getEngine());
+                        car.setEngine(config.getEngine());
+                        break;
+                    case TAPICERIA:
+                        if (ds.getUpholsteries().getStock(config.getUpholstery()) <= 0)
+                            throw new IllegalStateException("No hay tapicerías en stock");
+                        ds.getUpholsteries().remove(config.getUpholstery());
+                        car.setUpholstery(config.getUpholstery());
+                        break;
+                    case RUEDAS:
+                        if (ds.getWheels().getStock(config.getWheel()) <= 0)
+                            throw new IllegalStateException("No hay ruedas en stock");
+                        ds.getWheels().remove(config.getWheel());
+                        car.setWheel(config.getWheel());
+                        break;
                 }
             }
 
@@ -69,7 +86,9 @@ public class AssemblyLine {
             }
         }
 
-        if (modules.getFirst().isFree() && !pendingVehicles.isEmpty()) modules.getFirst().setVehicle(pendingVehicles.poll());
+        if (modules.getFirst().isFree() && !pendingVehicles.isEmpty()) {
+            modules.getFirst().setVehicle(pendingVehicles.poll());
+        }
     }
 
     public void addVehicle(Vehicle v) {
@@ -78,6 +97,10 @@ public class AssemblyLine {
 
     public Queue<Vehicle> getPendingVehicles() {
         return this.pendingVehicles;
+    }
+
+    public Queue<Vehicle> getFinishedVehicles() {
+        return finishedVehicles;
     }
 
     public List<String> getStatus() {
@@ -105,25 +128,5 @@ public class AssemblyLine {
         return status;
     }
 
-    //refactorizar a get
-
-    public void printFinishedVehicles() {
-        System.out.println("=== VEHICULOS TERMINADOS ===");
-
-        if (finishedVehicles.isEmpty()) {
-            System.out.println("No hay vehiculos terminados.");
-            return;
-        }
-
-        int count = 1;
-
-        for (Vehicle v : finishedVehicles) {
-            System.out.println("Coche #" + count++ + ": "
-                    + v.getColor()
-                    + " | Motor:" + (v.getEngine() != null ? "✔" : "✘")
-                    + " | Tapiceria:" + (v.getUpholstery() != null ? "✔" : "✘")
-                    + " | Ruedas:" + (v.getWheel() != null ? "✔" : "✘"));
-        }
-    }
 
 }

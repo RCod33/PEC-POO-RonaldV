@@ -76,7 +76,7 @@ public class Wheel {
 
     @Override
     public int hashCode() {
-        return Objects.hash(widthMm, rimDiameterInches, loadIndexKg, speedCode);
+        return Objects.hash(type, widthMm, rimDiameterInches, loadIndexKg, speedCode);
     }
 
 }

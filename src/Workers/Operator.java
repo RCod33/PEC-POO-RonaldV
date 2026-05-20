@@ -7,10 +7,10 @@ public class Operator extends Worker{
     private String perfil;
     private int numOfAssemblies;
 
-    public Operator(String name, String lastName, String secondLastName, String DNI, String address,
+    public Operator(String name, String lastName, String secondLastName, String DNI, String address, String numeroSS,
                 double salary, Date entryDate, int numOfAssemblies) {
 
-        super(name, lastName, secondLastName, DNI, address, salary, entryDate);
+        super(name, lastName, secondLastName, DNI, address, numeroSS, salary, entryDate);
 
         setNumOfAssemblies(numOfAssemblies);
     }
@@ -39,7 +39,7 @@ public class Operator extends Worker{
 
     private void updatePerfil() {
         if (numOfAssemblies > 10) {
-            perfil = "EICIENTE";
+            perfil = "EFICIENTE";
         } else {
             perfil = "ESTANDAR";
         }
