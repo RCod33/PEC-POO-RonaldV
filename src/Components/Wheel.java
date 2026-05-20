@@ -1,4 +1,6 @@
-package components;
+package Components;
+
+import java.util.Objects;
 
 public class Wheel {
 
@@ -50,6 +52,31 @@ public class Wheel {
     public String toString() {
         return type + " " + widthMm + "mm " + rimDiameterInches + "in " +
                 loadIndexKg + "kg " + speedCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Wheel)) {
+            return false;
+        }
+
+        Wheel other = (Wheel) obj;
+
+        return  type == other.type
+                && widthMm == other.widthMm
+                && rimDiameterInches == other.rimDiameterInches
+                && loadIndexKg == other.loadIndexKg
+                && speedCode == other.speedCode;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(widthMm, rimDiameterInches, loadIndexKg, speedCode);
     }
 
 }

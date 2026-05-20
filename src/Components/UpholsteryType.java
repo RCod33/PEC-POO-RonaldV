@@ -1,4 +1,4 @@
-package components;
+package Components;
 
 public enum UpholsteryType {
     TELA,

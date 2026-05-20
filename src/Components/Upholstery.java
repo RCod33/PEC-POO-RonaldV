@@ -1,4 +1,6 @@
-package components;
+package Components;
+
+import java.util.Objects;
 
 public class Upholstery {
 
@@ -35,5 +37,29 @@ public class Upholstery {
     public String toString() {
         return type + " " + color + " " + squareMeters + "m²";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Upholstery)) {
+            return false;
+        }
+
+        Upholstery other = (Upholstery) obj;
+
+        return Objects.equals(color, other.color)
+                && type == other.type
+                && squareMeters == other.squareMeters;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, squareMeters);
+    }
+
 }
 
