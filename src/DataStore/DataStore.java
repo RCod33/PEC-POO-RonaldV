@@ -7,6 +7,7 @@ import Components.Wheel;
 import Vehicles.Vehicle;
 import Vehicles.VehicleType;
 import Workers.Worker;
+import AssemblyLine.LineConfig;
 
 import java.util.*;
 
@@ -27,6 +28,9 @@ public class DataStore {
     private Map<VehicleType, AssemblyLine> assemblyLines = new HashMap<>();
 
     private DataStore() {
+        for (VehicleType type : VehicleType.values()) {
+            assemblyLines.put(type, new AssemblyLine());
+        }
     }
 
     public static DataStore getInstance() {
@@ -102,5 +106,13 @@ public class DataStore {
 
     public AssemblyLine getAssemblyLine(VehicleType type) {
         return assemblyLines.get(type);
+    }
+
+    public void modifyAssemblyLine(VehicleType type, LineConfig config) {
+        AssemblyLine line = assemblyLines.get(type);
+        if (line == null) {
+            throw new IllegalStateException("No existe línea para el tipo: " + type);
+        }
+        line.setConfig(config);
     }
 }

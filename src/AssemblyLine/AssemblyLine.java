@@ -1,6 +1,7 @@
 package AssemblyLine;
 
 import DataStore.DataStore;
+import Observers.AssemblyLineObserver;
 import Vehicles.Vehicle;
 import Workers.Operator;
 
@@ -12,21 +13,23 @@ import java.util.Queue;
 public class AssemblyLine {
 
     private ArrayList<AssemblyModule> modules = new ArrayList<>();
+    private List<AssemblyLineObserver> observers = new ArrayList<>();
     private Queue<Vehicle> pendingVehicles = new LinkedList<>();
     private Queue<Vehicle> finishedVehicles = new LinkedList<>();
-
     private LineConfig config;
 
-    public AssemblyLine(LineConfig config) {
-        this.config = config;
-
+    public AssemblyLine() {
         for (AssemblyPhase phase : AssemblyPhase.values()) {
             modules.add(new AssemblyModule(phase));
         }
     }
 
-    public ArrayList<AssemblyModule> getModules() {
-        return modules;
+    public void addObserver(AssemblyLineObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(AssemblyLineObserver observer) {
+        observers.remove(observer);
     }
 
     public void setModule (AssemblyPhase phase, Operator operator) {
@@ -34,14 +37,56 @@ public class AssemblyLine {
         modules.set(phase.ordinal(), module);
     }
 
+    public ArrayList<AssemblyModule> getModules() {
+        return modules;
+    }
+
+    public void setConfig(LineConfig config) {
+        this.config = config;
+    }
+
+    public void addVehicle(Vehicle v) {
+        pendingVehicles.add(v);
+    }
+
+    public Queue<Vehicle> getPendingVehicles() {
+        return this.pendingVehicles;
+    }
+
+    public Queue<Vehicle> getFinishedVehicles() {
+        return finishedVehicles;
+    }
+
+    private void validateLine() {
+        if (config == null) {
+            throw new IllegalStateException("La línea no tiene configuración asignada");
+        }
+        if (config.getEngine() == null) {
+            throw new IllegalStateException("La configuración de la línea no tiene motor asignado");
+        }
+        if (config.getUpholstery() == null) {
+            throw new IllegalStateException("La configuración de la línea no tiene tapicería asignada");
+        }
+        if (config.getWheel() == null) {
+            throw new IllegalStateException("La configuración de la línea no tiene ruedas asignadas");
+        }
+        for (AssemblyModule module : modules) {
+            if (module.getOperator() == null) {
+                throw new IllegalStateException(
+                        "El módulo " + module.getPhase() + " no tiene operario asignado"
+                );
+            }
+        }
+    }
+
     public void updateLine() {
+        validateLine();
 
         DataStore ds = DataStore.getInstance();
 
         for (int i = modules.size() - 1; i >= 0; --i) {
 
             AssemblyModule current = modules.get(i);
-
             boolean finished = current.work();
 
             if (!finished) continue;
@@ -56,18 +101,27 @@ public class AssemblyLine {
                             throw new IllegalStateException("No hay motores en stock");
                         ds.getEngines().remove(config.getEngine());
                         car.setEngine(config.getEngine());
+                        for (AssemblyLineObserver o : observers)
+                            o.onComponentConsumed("Motor",
+                                    ds.getEngines().getStock(config.getEngine()));
                         break;
                     case TAPICERIA:
                         if (ds.getUpholsteries().getStock(config.getUpholstery()) <= 0)
                             throw new IllegalStateException("No hay tapicerías en stock");
                         ds.getUpholsteries().remove(config.getUpholstery());
                         car.setUpholstery(config.getUpholstery());
+                        for (AssemblyLineObserver o : observers)
+                            o.onComponentConsumed("Tapicería",
+                                    ds.getUpholsteries().getStock(config.getUpholstery()));
                         break;
                     case RUEDAS:
                         if (ds.getWheels().getStock(config.getWheel()) <= 0)
                             throw new IllegalStateException("No hay ruedas en stock");
                         ds.getWheels().remove(config.getWheel());
                         car.setWheel(config.getWheel());
+                        for (AssemblyLineObserver o : observers)
+                            o.onComponentConsumed("Ruedas",
+                                    ds.getWheels().getStock(config.getWheel()));
                         break;
                 }
             }
@@ -75,6 +129,8 @@ public class AssemblyLine {
             if (i == modules.size() - 1) {
                 Vehicle finishedCar = current.releaseVehicle();
                 finishedVehicles.add(finishedCar);
+                for (AssemblyLineObserver o : observers)
+                    o.onVehicleFinished(finishedCar);
                 continue;
             }
 
@@ -83,24 +139,17 @@ public class AssemblyLine {
             if (next.isFree()) {
                 Vehicle v = current.releaseVehicle();
                 next.setVehicle(v);
+                for (AssemblyLineObserver o : observers)
+                    o.onVehicleAdvanced(v, phase, next.getPhase());
             }
         }
 
         if (modules.getFirst().isFree() && !pendingVehicles.isEmpty()) {
-            modules.getFirst().setVehicle(pendingVehicles.poll());
+            Vehicle v = pendingVehicles.poll();
+            modules.getFirst().setVehicle(v);
+            for (AssemblyLineObserver o : observers)
+                o.onVehicleEntered(v);
         }
-    }
-
-    public void addVehicle(Vehicle v) {
-        pendingVehicles.add(v);
-    }
-
-    public Queue<Vehicle> getPendingVehicles() {
-        return this.pendingVehicles;
-    }
-
-    public Queue<Vehicle> getFinishedVehicles() {
-        return finishedVehicles;
     }
 
     public List<String> getStatus() {

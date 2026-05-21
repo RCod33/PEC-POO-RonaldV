@@ -1,6 +1,7 @@
 package Workers;
 
 import java.util.Date;
+import java.util.Objects;
 
 abstract public class Worker {
     private String name;
@@ -133,4 +134,10 @@ abstract public class Worker {
 
         return this.DNI.equals(worker.DNI);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(DNI);
+    }
+
 }

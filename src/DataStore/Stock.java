@@ -14,13 +14,13 @@ public class Stock<T> {
 
     public void remove(T item) {
 
-        if(!inventory.containsKey(item)) {
-            return;
+        if (!inventory.containsKey(item)) {
+            throw new IllegalStateException("No hay stock del componente: " + item);
         }
 
         int quantity = inventory.get(item);
 
-        if(quantity <= 1) {
+        if (quantity <= 1) {
             inventory.remove(item);
         } else {
             inventory.put(item, quantity - 1);

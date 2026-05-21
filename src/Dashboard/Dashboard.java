@@ -1,20 +1,12 @@
 package Dashboard;
 
-import AssemblyLine.AssemblyLine;
-import Components.Engine;
 import Vehicles.Vehicle;
+import Observers.AssemblyLineObserver;
 
 import java.util.Map;
 
-public interface Dashboard {
-
+public interface Dashboard extends AssemblyLineObserver{
     void showAssemblyLines();
-
     void showWarehouseStatus();
-
-    void showVehicleUpdate(Vehicle vehicle);
-
-    void showComponentUpdate(String component, int remaining);
-
     void showMessage(String message);
 }
