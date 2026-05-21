@@ -4,7 +4,7 @@ import Vehicles.Vehicle;
 import Workers.Operator;
 
 public class AssemblyModule {
-    private AssemblyPhase phase;
+    private final AssemblyPhase phase;
     private Operator operator;
     private Vehicle vehicle;
     private int internalTimer = 0;
@@ -34,7 +34,7 @@ public class AssemblyModule {
         return phase;
     }
 
-    public void setVehicle(Vehicle vehicle) {
+    protected void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
     }
 

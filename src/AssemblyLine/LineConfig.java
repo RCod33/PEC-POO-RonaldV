@@ -15,6 +15,19 @@ public class LineConfig {
         this.wheel = wheel;
     }
 
+    public void validateLine() {
+        if (engine == null) {
+            throw new IllegalStateException("La configuración de la línea no tiene motor asignado");
+        }
+        if (upholstery == null) {
+            throw new IllegalStateException("La configuración de la línea no tiene tapicería asignada");
+        }
+        if (wheel == null) {
+            throw new IllegalStateException("La configuración de la línea no tiene ruedas asignadas");
+        }
+
+    }
+
     public Engine getEngine() {
         return engine;
     }

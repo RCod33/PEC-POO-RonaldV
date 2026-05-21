@@ -101,7 +101,7 @@ public class DataStore {
     // =========================
 
     public Map<VehicleType, AssemblyLine> getAssemblyLines() {
-        return assemblyLines;
+        return Collections.unmodifiableMap(assemblyLines);
     }
 
     public AssemblyLine getAssemblyLine(VehicleType type) {

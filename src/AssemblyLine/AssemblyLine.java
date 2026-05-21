@@ -5,14 +5,11 @@ import Observers.AssemblyLineObserver;
 import Vehicles.Vehicle;
 import Workers.Operator;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class AssemblyLine {
 
-    private ArrayList<AssemblyModule> modules = new ArrayList<>();
+    private List<AssemblyModule> modules = new ArrayList<>();
     private List<AssemblyLineObserver> observers = new ArrayList<>();
     private Queue<Vehicle> pendingVehicles = new LinkedList<>();
     private Queue<Vehicle> finishedVehicles = new LinkedList<>();
@@ -37,8 +34,8 @@ public class AssemblyLine {
         modules.set(phase.ordinal(), module);
     }
 
-    public ArrayList<AssemblyModule> getModules() {
-        return modules;
+    public List<AssemblyModule> getModules() {
+        return Collections.unmodifiableList(modules);
     }
 
     public void setConfig(LineConfig config) {
@@ -57,19 +54,9 @@ public class AssemblyLine {
         return finishedVehicles;
     }
 
-    private void validateLine() {
-        if (config == null) {
-            throw new IllegalStateException("La línea no tiene configuración asignada");
-        }
-        if (config.getEngine() == null) {
-            throw new IllegalStateException("La configuración de la línea no tiene motor asignado");
-        }
-        if (config.getUpholstery() == null) {
-            throw new IllegalStateException("La configuración de la línea no tiene tapicería asignada");
-        }
-        if (config.getWheel() == null) {
-            throw new IllegalStateException("La configuración de la línea no tiene ruedas asignadas");
-        }
+    public void updateLine() {
+        config.validateLine();
+
         for (AssemblyModule module : modules) {
             if (module.getOperator() == null) {
                 throw new IllegalStateException(
@@ -77,10 +64,6 @@ public class AssemblyLine {
                 );
             }
         }
-    }
-
-    public void updateLine() {
-        validateLine();
 
         DataStore ds = DataStore.getInstance();
 
