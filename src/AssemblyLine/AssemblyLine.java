@@ -46,12 +46,12 @@ public class AssemblyLine {
         pendingVehicles.add(v);
     }
 
-    public Queue<Vehicle> getPendingVehicles() {
-        return this.pendingVehicles;
+    public Collection<Vehicle> getPendingVehicles() {
+        return Collections.unmodifiableCollection(pendingVehicles);
     }
 
-    public Queue<Vehicle> getFinishedVehicles() {
-        return finishedVehicles;
+    public Collection<Vehicle> getFinishedVehicles() {
+        return Collections.unmodifiableCollection(finishedVehicles);
     }
 
     public void updateLine() {
