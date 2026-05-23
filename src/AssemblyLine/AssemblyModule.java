@@ -58,7 +58,7 @@ public class AssemblyModule {
     }
 
 
-    public Vehicle releaseVehicle() {
+    protected Vehicle releaseVehicle() {
         Vehicle v = vehicle;
         vehicle = null;
         internalTimer = 0;

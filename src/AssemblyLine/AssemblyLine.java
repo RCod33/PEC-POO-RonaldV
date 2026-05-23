@@ -9,13 +9,15 @@ import java.util.*;
 
 public class AssemblyLine {
 
+    private final DataStore dataStore;
     private List<AssemblyModule> modules = new ArrayList<>();
     private List<AssemblyLineObserver> observers = new ArrayList<>();
     private Queue<Vehicle> pendingVehicles = new LinkedList<>();
     private Queue<Vehicle> finishedVehicles = new LinkedList<>();
     private LineConfig config;
 
-    public AssemblyLine() {
+    public AssemblyLine(DataStore dataStore) {
+        this.dataStore = dataStore;
         for (AssemblyPhase phase : AssemblyPhase.values()) {
             modules.add(new AssemblyModule(phase));
         }
@@ -29,7 +31,7 @@ public class AssemblyLine {
         observers.remove(observer);
     }
 
-    public void setModule (AssemblyPhase phase, Operator operator) {
+    public void setModule(AssemblyPhase phase, Operator operator) {
         AssemblyModule module = new AssemblyModule(phase, operator);
         modules.set(phase.ordinal(), module);
     }
@@ -40,6 +42,11 @@ public class AssemblyLine {
 
     public void setConfig(LineConfig config) {
         this.config = config;
+    }
+
+    //TODO: devolrver inmutable
+    public LineConfig getConfig () {
+        return config;
     }
 
     public void addVehicle(Vehicle v) {
@@ -65,8 +72,6 @@ public class AssemblyLine {
             }
         }
 
-        DataStore ds = DataStore.getInstance();
-
         for (int i = modules.size() - 1; i >= 0; --i) {
 
             AssemblyModule current = modules.get(i);
@@ -77,36 +82,9 @@ public class AssemblyLine {
             Vehicle car = current.getVehicle();
             AssemblyPhase phase = current.getPhase();
 
+            // Polimorfismo: cada fase sabe qué componente consumir
             if (car != null) {
-                switch (phase) {
-                    case MOTOR:
-                        if (ds.getEngines().getStock(config.getEngine()) <= 0)
-                            throw new IllegalStateException("No hay motores en stock");
-                        ds.getEngines().remove(config.getEngine());
-                        car.setEngine(config.getEngine());
-                        for (AssemblyLineObserver o : observers)
-                            o.onComponentConsumed("Motor",
-                                    ds.getEngines().getStock(config.getEngine()));
-                        break;
-                    case TAPICERIA:
-                        if (ds.getUpholsteries().getStock(config.getUpholstery()) <= 0)
-                            throw new IllegalStateException("No hay tapicerías en stock");
-                        ds.getUpholsteries().remove(config.getUpholstery());
-                        car.setUpholstery(config.getUpholstery());
-                        for (AssemblyLineObserver o : observers)
-                            o.onComponentConsumed("Tapicería",
-                                    ds.getUpholsteries().getStock(config.getUpholstery()));
-                        break;
-                    case RUEDAS:
-                        if (ds.getWheels().getStock(config.getWheel()) <= 0)
-                            throw new IllegalStateException("No hay ruedas en stock");
-                        ds.getWheels().remove(config.getWheel());
-                        car.setWheel(config.getWheel());
-                        for (AssemblyLineObserver o : observers)
-                            o.onComponentConsumed("Ruedas",
-                                    ds.getWheels().getStock(config.getWheel()));
-                        break;
-                }
+                phase.apply(car, config, dataStore, observers);
             }
 
             if (i == modules.size() - 1) {
@@ -138,7 +116,6 @@ public class AssemblyLine {
     public List<String> getStatus() {
 
         List<String> status = new ArrayList<>();
-
         String[] names = {"CHASIS", "MOTOR", "TAPICERIA", "RUEDAS"};
 
         for (int i = 0; i < modules.size(); i++) {
@@ -148,9 +125,7 @@ public class AssemblyLine {
                 status.add(names[i] + " -> VACIO");
             } else {
                 Vehicle v = m.getVehicle();
-
-                status.add(names[i] + " -> " +
-                        v.getColor()
+                status.add(names[i] + " -> " + v.getColor()
                         + " | Motor:" + (v.getEngine() != null ? "✔" : "✘")
                         + " | Tap:" + (v.getUpholstery() != null ? "✔" : "✘")
                         + " | Ruedas:" + (v.getWheel() != null ? "✔" : "✘"));
@@ -159,6 +134,4 @@ public class AssemblyLine {
 
         return status;
     }
-
-
 }

@@ -6,7 +6,7 @@ import Components.Upholstery;
 import Components.Wheel;
 import Vehicles.Vehicle;
 import Vehicles.VehicleType;
-import Workers.Worker;
+import Workers.*;
 import AssemblyLine.LineConfig;
 
 import java.util.*;
@@ -29,7 +29,7 @@ public class DataStore {
 
     private DataStore() {
         for (VehicleType type : VehicleType.values()) {
-            assemblyLines.put(type, new AssemblyLine());
+            assemblyLines.put(type, new AssemblyLine(this));
         }
     }
 
@@ -52,16 +52,64 @@ public class DataStore {
         workers.add(worker);
     }
 
-    public Worker searchWorker(String DNI) {
-
+    public Worker searchWorkerByDNI(String DNI) {
         for (Worker worker : workers) {
-
             if (Objects.equals(worker.getDNI(), DNI)) {
                 return worker;
             }
         }
-
         return null;
+    }
+
+    public List<Worker> searchWorkersByName(String name) {
+        List<Worker> result = new ArrayList<>();
+        for (Worker worker : workers) {
+            if (worker.getName().equalsIgnoreCase(name)
+                    || worker.getLastName().equalsIgnoreCase(name)) {
+                result.add(worker);
+            }
+        }
+        return result;
+    }
+
+    public List<Operator> getOperators() {
+        List<Operator> result = new ArrayList<>();
+        for (Worker worker : workers) {
+            if (worker instanceof Operator) {
+                result.add((Operator) worker);
+            }
+        }
+        return result;
+    }
+
+    public List<Mechanic> getMechanics() {
+        List<Mechanic> result = new ArrayList<>();
+        for (Worker worker : workers) {
+            if (worker instanceof Mechanic) {
+                result.add((Mechanic) worker);
+            }
+        }
+        return result;
+    }
+
+    public List<PlantManager> getPlantManagers() {
+        List<PlantManager> result = new ArrayList<>();
+        for (Worker worker : workers) {
+            if (worker instanceof PlantManager) {
+                result.add((PlantManager) worker);
+            }
+        }
+        return result;
+    }
+
+    public List<SystemAdministrator> getSystemAdministrators() {
+        List<SystemAdministrator> result = new ArrayList<>();
+        for (Worker worker : workers) {
+            if (worker instanceof SystemAdministrator) {
+                result.add((SystemAdministrator) worker);
+            }
+        }
+        return result;
     }
 
     // =========================

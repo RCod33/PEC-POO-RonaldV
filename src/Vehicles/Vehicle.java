@@ -27,6 +27,9 @@ public class Vehicle {
         this.maxAllowedWeight = maxAllowedWeight;
     }
 
+    public VehicleType getType() {
+        return type;
+    }
 
     public String getColor() {
         return color;
@@ -70,6 +73,13 @@ public class Vehicle {
     }
 
     @Override
+    public String toString() {
+        return type + " [" + color + "] - " + numberOfSeats + " plazas"
+                + " | Tara: " + tareWeight + "kg"
+                + " | Máx: " + maxAllowedWeight + "kg";
+    }
+
+    @Override
     public boolean equals(Object obj) {
 
         if (this == obj) {
@@ -93,5 +103,6 @@ public class Vehicle {
     public int hashCode() {
         return Objects.hash(type, color, numberOfSeats, tareWeight, maxAllowedWeight);
     }
+
 
 }

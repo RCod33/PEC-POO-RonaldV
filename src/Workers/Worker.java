@@ -33,6 +33,8 @@ abstract public class Worker {
         this.entryDate = (entryDate != null) ? entryDate : new Date();
     }
 
+    public abstract String getRole();
+
     public String getNumeroSS() {
         return numeroSS;
     }
@@ -120,7 +122,7 @@ abstract public class Worker {
 
     @Override
     public String toString() {
-        return name + " " + lastName + " - " + DNI;
+        return getRole() + " | " + name + " " + lastName + " - " + DNI;
     }
 
     @Override

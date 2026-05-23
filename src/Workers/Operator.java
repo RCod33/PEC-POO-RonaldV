@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class Operator extends Worker{
 
+    private static final int ASSEMBLIES_FOR_EFFICIENT = 10;
     private String perfil;
     private int numOfAssemblies;
 
@@ -15,6 +16,11 @@ public class Operator extends Worker{
         setNumOfAssemblies(numOfAssemblies);
     }
 
+    @Override
+    public String getRole() {
+        return "Operario";
+    }
+
     public void setNumOfAssemblies(int numOfAssemblies) {
         if (numOfAssemblies >= 0) {
             this.numOfAssemblies = numOfAssemblies;
@@ -24,6 +30,7 @@ public class Operator extends Worker{
 
         }
     }
+
 
     public int getNumOfAssemblies() {
         return numOfAssemblies;
@@ -38,7 +45,7 @@ public class Operator extends Worker{
     }
 
     private void updatePerfil() {
-        if (numOfAssemblies > 10) {
+        if (numOfAssemblies > ASSEMBLIES_FOR_EFFICIENT) {
             perfil = "EFICIENTE";
         } else {
             perfil = "ESTANDAR";
