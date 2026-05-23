@@ -44,8 +44,7 @@ public class AssemblyLine {
         this.config = config;
     }
 
-    //TODO: devolrver inmutable
-    public LineConfig getConfig () {
+    public LineConfig getConfig() {
         return config;
     }
 

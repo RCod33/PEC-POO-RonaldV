@@ -45,7 +45,7 @@ public class DataStore {
     // =========================
 
     public List<Worker> getWorkers() {
-        return workers;
+        return Collections.unmodifiableList(workers);
     }
 
     public void addWorker(Worker worker) {

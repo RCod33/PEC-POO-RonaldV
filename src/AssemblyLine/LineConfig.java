@@ -5,9 +5,10 @@ import Components.Upholstery;
 import Components.Wheel;
 
 public class LineConfig {
-    private Engine engine;
-    private Upholstery upholstery;
-    private Wheel wheel;
+
+    private final Engine engine;
+    private final Upholstery upholstery;
+    private final Wheel wheel;
 
     public LineConfig(Engine engine, Upholstery upholstery, Wheel wheel) {
         this.engine = engine;
@@ -16,39 +17,22 @@ public class LineConfig {
     }
 
     public void validateLine() {
-        if (engine == null) {
+        if (engine == null)
             throw new IllegalStateException("La configuración de la línea no tiene motor asignado");
-        }
-        if (upholstery == null) {
+        if (upholstery == null)
             throw new IllegalStateException("La configuración de la línea no tiene tapicería asignada");
-        }
-        if (wheel == null) {
+        if (wheel == null)
             throw new IllegalStateException("La configuración de la línea no tiene ruedas asignadas");
-        }
-
     }
 
-    public Engine getEngine() {
-        return engine;
-    }
+    public Engine getEngine()         { return engine; }
+    public Upholstery getUpholstery() { return upholstery; }
+    public Wheel getWheel()           { return wheel; }
 
-    public void setEngine(Engine engine) {
-        this.engine = engine;
-    }
-
-    public Upholstery getUpholstery() {
-        return upholstery;
-    }
-
-    public void setUpholstery(Upholstery upholstery) {
-        this.upholstery = upholstery;
-    }
-
-    public Wheel getWheel() {
-        return wheel;
-    }
-
-    public void setWheel(Wheel wheel) {
-        this.wheel = wheel;
+    @Override
+    public String toString() {
+        return "LineConfig{engine=" + engine +
+                ", upholstery=" + upholstery +
+                ", wheel=" + wheel + "}";
     }
 }

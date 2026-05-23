@@ -34,6 +34,10 @@ public class Scheduler {
             AssemblyLine line = dataStore.getAssemblyLine(vehicleType);
             LineConfig config = line.getConfig();
 
+            if (config == null)
+                throw new IllegalStateException("La configuracion de la cadena '" + vehicleType + "' no puede estar vacia");
+            config.validateLine();
+
             int pending = line.getPendingVehicles().size();
             addRequired(requiredEngines, config.getEngine(), pending);
             addRequired(requiredUpholsteries, config.getUpholstery(), pending);
@@ -90,6 +94,7 @@ public class Scheduler {
     private void assignOperators(List<Operator> operators) {
 
         if (operators.size() < 12) {
+            System.out.println(operators.size());
             throw new IllegalStateException(
                     "Se necesitan al menos 12 operarios para iniciar la simulación"
             );

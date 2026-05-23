@@ -3,7 +3,7 @@ package Workers;
 import java.util.Date;
 import java.util.Random;
 
-public class Mechanic extends Worker {
+public class Mechanic extends Worker implements LineWorker {
 
     private static final int REPAIRS_FOR_EFFICIENT = 20;
 
@@ -22,36 +22,42 @@ public class Mechanic extends Worker {
         return "Mecánico de Cinta";
     }
 
+    // --- LineWorker ---
+
+    @Override
+    public int getWorkTime() {
+        return (numOfRepairs > REPAIRS_FOR_EFFICIENT) ? 1 : 2 + new Random().nextInt(4); // [2,5]
+    }
+
+    @Override
+    public void updateWorker() {
+        ++numOfRepairs;
+        updatePerfil();
+    }
+
+    // --- Mechanic-specific ---
+
     public void setNumOfRepairs(int numOfRepairs) {
-        if (numOfRepairs < 0) {
+        if (numOfRepairs < 0)
             throw new IllegalArgumentException("El número de reparaciones no puede ser negativo");
-        }
         this.numOfRepairs = numOfRepairs;
         updatePerfil();
     }
 
-    public int getNumOfRepairs() {
-        return numOfRepairs;
-    }
+    public int getNumOfRepairs() { return numOfRepairs; }
 
-    public String getPerfil() {
-        return perfil;
-    }
+    @Override
+    public String getPerfil() { return perfil; }
 
-    public int getRepairTime() {
-        if (numOfRepairs > REPAIRS_FOR_EFFICIENT) {
-            return 1;
-        } else {
-            return 2 + new Random().nextInt(4); // [2, 5]
-        }
-    }
+    /** @deprecated Usar updateWorker() para seguir el contrato LineWorker */
+    @Deprecated
+    public void updateMechanic() { updateWorker(); }
+
+    /** @deprecated Usar getWorkTime() para seguir el contrato LineWorker */
+    @Deprecated
+    public int getRepairTime() { return getWorkTime(); }
 
     private void updatePerfil() {
         perfil = (numOfRepairs > REPAIRS_FOR_EFFICIENT) ? "EFICIENTE" : "ESTANDAR";
-    }
-
-    public void updateMechanic() {
-        ++numOfRepairs;
-        updatePerfil();
     }
 }

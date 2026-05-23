@@ -2,7 +2,7 @@ package Workers;
 
 import java.util.Date;
 
-public class Operator extends Worker{
+public class Operator extends Worker implements LineWorker{
 
     private static final int ASSEMBLIES_FOR_EFFICIENT = 10;
     private String perfil;
@@ -21,39 +21,40 @@ public class Operator extends Worker{
         return "Operario";
     }
 
-    public void setNumOfAssemblies(int numOfAssemblies) {
-        if (numOfAssemblies >= 0) {
-            this.numOfAssemblies = numOfAssemblies;
-            updatePerfil();
-        } else {
-            throw new IllegalArgumentException("El numero de montajes realizados no puede ser negativo");
-
-        }
+    @Override
+    public int getWorkTime() {
+        return (numOfAssemblies > ASSEMBLIES_FOR_EFFICIENT) ? 1 : 3;
     }
 
-
-    public int getNumOfAssemblies() {
-        return numOfAssemblies;
-    }
-
-    public String getPerfil() {
-        return perfil;
-    }
-
-    public int getTimePerAssemblies() {
-        return (numOfAssemblies > 10) ? 1 : 3;
-    }
-
-    private void updatePerfil() {
-        if (numOfAssemblies > ASSEMBLIES_FOR_EFFICIENT) {
-            perfil = "EFICIENTE";
-        } else {
-            perfil = "ESTANDAR";
-        }
-    }
-
-    public void updateOperator() {
+    @Override
+    public void updateWorker() {
         ++numOfAssemblies;
         updatePerfil();
+    }
+
+    // --- Operario-specific ---
+
+    public void setNumOfAssemblies(int numOfAssemblies) {
+        if (numOfAssemblies < 0)
+            throw new IllegalArgumentException("El número de montajes no puede ser negativo");
+        this.numOfAssemblies = numOfAssemblies;
+        updatePerfil();
+    }
+
+    public int getNumOfAssemblies() { return numOfAssemblies; }
+
+    @Override
+    public String getPerfil() { return perfil; }
+
+    /** @deprecated Usar updateWorker() para seguir el contrato LineWorker */
+    @Deprecated
+    public void updateOperator() { updateWorker(); }
+
+    /** @deprecated Usar getWorkTime() para seguir el contrato LineWorker */
+    @Deprecated
+    public int getTimePerAssemblies() { return getWorkTime(); }
+
+    private void updatePerfil() {
+        perfil = (numOfAssemblies > ASSEMBLIES_FOR_EFFICIENT) ? "EFICIENTE" : "ESTANDAR";
     }
 }
