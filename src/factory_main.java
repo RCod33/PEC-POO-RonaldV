@@ -238,7 +238,7 @@ public class factory_main {
     }
 
     /**
-     * Calcula la letra del DNI según el número
+     * Calcula la letra del DNI según el número solo se usa en el init
      */
     private static char letraDNI(int numero) {
         String letras = "TRWAGMYFPDXBNJZSQVHLCKE";
@@ -253,6 +253,9 @@ public class factory_main {
             dataStore.getAssemblyLine(type).addObserver(dashboard);
         }
 
+        /**
+         * Main menu
+         * **/
         boolean exit = false;
         while (!exit) {
             printMainMenu();
