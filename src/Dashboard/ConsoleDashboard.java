@@ -6,6 +6,13 @@ import DataStore.DataStore;
 import Vehicles.Vehicle;
 import Vehicles.VehicleType;
 
+
+/**
+ * Implementación de dashboard en consola.
+ *
+ * Muestra el estado de las líneas de ensamblaje,
+ * el almacén y reacciona a eventos del sistema (Observer).
+ */
 public class ConsoleDashboard implements Dashboard {
 
     private DataStore dataStore;
@@ -16,7 +23,7 @@ public class ConsoleDashboard implements Dashboard {
 
     @Override
     public void showAssemblyLines() {
-
+        // Muestra el estado de cada línea de ensamblaje por tipo de vehículo
         for (VehicleType type : VehicleType.values()) {
 
             System.out.println("\nLINEA: " + type + "\n");

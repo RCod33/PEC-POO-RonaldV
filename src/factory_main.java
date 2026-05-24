@@ -662,6 +662,7 @@ public class factory_main {
         for (VehicleType type : VehicleType.values()) {
             dataStore.getAssemblyLine(type).getFinishedVehicles()
                     .forEach(v -> dataStore.getVehicles().add(v));
+            dataStore.getAssemblyLine(type).clearFinishedVehicles();
         }
     }
 

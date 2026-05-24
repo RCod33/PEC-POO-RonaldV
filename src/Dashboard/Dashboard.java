@@ -1,6 +1,5 @@
 package Dashboard;
 
-import Vehicles.Vehicle;
 import Observers.AssemblyLineObserver;
 
 import java.util.Map;

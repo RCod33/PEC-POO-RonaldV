@@ -18,6 +18,9 @@ public class AssemblyLine {
     private Queue<Vehicle> finishedVehicles = new LinkedList<>();
     private LineConfig config;
 
+
+    // Inicializa automáticamente todos los módulos de la línea
+    // siguiendo el orden definido en AssemblyPhase
     public AssemblyLine(DataStore dataStore, VehicleType lineType) {
         this.dataStore = dataStore;
         this.lineType  = lineType;
@@ -62,6 +65,12 @@ public class AssemblyLine {
         return Collections.unmodifiableCollection(finishedVehicles);
     }
 
+    /**
+     * Ejecuta un ciclo completo de simulación de la línea de ensamblaje.
+     *
+     * Cada módulo trabaja sobre su vehículo actual y, si termina,
+     * el vehículo avanza al siguiente módulo o sale de la línea.
+     */
     public void updateLine() {
         config.validateLine();
 
@@ -73,6 +82,8 @@ public class AssemblyLine {
             }
         }
 
+        // Se recorre de atrás hacia adelante para evitar sobrescribir
+        // vehículos al moverlos entre módulos en el mismo ciclo
         for (int i = modules.size() - 1; i >= 0; --i) {
 
             AssemblyModule current = modules.get(i);
@@ -84,9 +95,12 @@ public class AssemblyLine {
             AssemblyPhase phase = current.getPhase();
 
             if (car != null) {
+                // Aplica la lógica específica de la fase actual al vehículo
                 phase.apply(car, config, dataStore, observers);
             }
 
+            // Último módulo: el vehículo sale de la línea de ensamblaje
+            // Marca el vehículo como ensamblado y lo mueve al historial finalizado
             if (i == modules.size() - 1) {
                 Vehicle finishedCar = current.releaseVehicle();
                 // Registrar fecha y línea de ensamblaje
@@ -97,6 +111,7 @@ public class AssemblyLine {
                 continue;
             }
 
+            // Avanza el vehículo al siguiente módulo si está libre
             AssemblyModule next = modules.get(i + 1);
             if (next.isFree()) {
                 Vehicle v = current.releaseVehicle();
@@ -106,6 +121,7 @@ public class AssemblyLine {
             }
         }
 
+        // Introduce un nuevo vehículo en la línea si el primer módulo está libre
         if (modules.getFirst().isFree() && !pendingVehicles.isEmpty()) {
             Vehicle v = pendingVehicles.poll();
             modules.getFirst().setVehicle(v);
@@ -131,4 +147,9 @@ public class AssemblyLine {
         }
         return status;
     }
+
+    public void clearFinishedVehicles() {
+        finishedVehicles.clear();
+    }
+
 }

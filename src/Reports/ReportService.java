@@ -11,8 +11,17 @@ import Workers.Operator;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Servicio de generación de informes del sistema de producción.
+ *
+ * Permite consultar operarios, vehículos ensamblados,
+ * configuraciones más producidas y estadísticas por fecha.
+ *
+ * Actúa como capa de reporting sobre el DataStore.
+ */
 public class ReportService {
 
+    // Formateador de fechas para reportes
     private static final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     private final DataStore dataStore;

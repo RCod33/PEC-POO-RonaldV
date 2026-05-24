@@ -11,8 +11,18 @@ import AssemblyLine.LineConfig;
 
 import java.util.*;
 
+/**
+ * Repositorio central de datos del sistema.
+ *
+ * Gestiona trabajadores, stocks de componentes,
+ * vehículos y líneas de ensamblaje.
+ *
+ * Implementa patrón Singleton para asegurar una única instancia global.
+ */
+
 public class DataStore {
 
+    // Singleton: única instancia global del sistema
     private static DataStore instance;
 
     private List<Worker> workers = new ArrayList<>();
@@ -27,6 +37,7 @@ public class DataStore {
 
     private Map<VehicleType, AssemblyLine> assemblyLines = new HashMap<>();
 
+    // Constructor privado para evitar instanciación externa
     private DataStore() {
         for (VehicleType type : VehicleType.values()) {
             assemblyLines.put(type, new AssemblyLine(this, type));

@@ -4,6 +4,10 @@ import Components.Engine;
 import Components.Upholstery;
 import Components.Wheel;
 
+/**
+ * Define la configuración de componentes utilizada
+ * por una línea de ensamblaje.
+ */
 public class LineConfig {
 
     private final Engine engine;
