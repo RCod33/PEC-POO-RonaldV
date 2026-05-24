@@ -4,6 +4,7 @@ import Components.Engine;
 import Components.Upholstery;
 import Components.Wheel;
 
+import java.util.Date;
 import java.util.Objects;
 
 public class Vehicle {
@@ -18,8 +19,12 @@ public class Vehicle {
     private Upholstery upholstery;
     private Wheel wheel;
 
+    // Metadatos de ensamblaje — se rellenan al salir de la cadena
+    private Date assembledDate;
+    private VehicleType assembledLineType;
 
-    public Vehicle(VehicleType type, String color, int numberOfSeats, double tareWeight, double maxAllowedWeight) {
+    public Vehicle(VehicleType type, String color, int numberOfSeats,
+                   double tareWeight, double maxAllowedWeight) {
         this.type = type;
         this.color = color;
         this.numberOfSeats = numberOfSeats;
@@ -27,50 +32,44 @@ public class Vehicle {
         this.maxAllowedWeight = maxAllowedWeight;
     }
 
-    public VehicleType getType() {
-        return type;
+    // ---- Getters básicos ----
+
+    public VehicleType getType()           { return type; }
+    public String getColor()               { return color; }
+    public int getNumberOfSeats()          { return numberOfSeats; }
+    public double getTareWeight()          { return tareWeight; }
+    public double getMaxAllowedWeight()    { return maxAllowedWeight; }
+
+    // ---- Motor ----
+
+    public void setEngine(Engine engine)   { this.engine = engine; }
+    public Engine getEngine()              { return engine; }
+
+    // ---- Tapicería ----
+
+    public void setUpholstery(Upholstery upholstery) { this.upholstery = upholstery; }
+    public Upholstery getUpholstery()                { return upholstery; }
+
+    // ---- Ruedas ----
+
+    public void setWheel(Wheel wheel)      { this.wheel = wheel; }
+    public Wheel getWheel()                { return wheel; }
+
+    // ---- Metadatos de ensamblaje ----
+
+    /**
+     * Marca el vehículo como ensamblado: registra la fecha y la línea
+     * en la que se terminó de montar.
+     */
+    public void markAssembled(VehicleType lineType) {
+        this.assembledDate     = new Date();
+        this.assembledLineType = lineType;
     }
 
-    public String getColor() {
-        return color;
-    }
+    public Date getAssembledDate()             { return assembledDate; }
+    public VehicleType getAssembledLineType()  { return assembledLineType; }
 
-    public int getNumberOfSeats() {
-        return numberOfSeats;
-    }
-
-    public double getTareWeight() {
-        return tareWeight;
-    }
-
-    public double getMaxAllowedWeight() {
-        return maxAllowedWeight;
-    }
-
-    public void setEngine(Engine engine) {
-        this.engine = engine;
-    }
-
-    public Engine getEngine() {
-        return engine;
-    }
-
-    public void setUpholstery(Upholstery upholstery) {
-        this.upholstery = upholstery;
-    }
-
-    public Upholstery getUpholstery() {
-        return upholstery;
-    }
-
-
-    public void setWheel(Wheel wheel) {
-        this.wheel = wheel;
-    }
-
-    public Wheel getWheel() {
-        return wheel;
-    }
+    // ---- Object ----
 
     @Override
     public String toString() {
@@ -81,17 +80,9 @@ public class Vehicle {
 
     @Override
     public boolean equals(Object obj) {
-
-        if (this == obj) {
-            return true;
-        }
-
-        if (!(obj instanceof Vehicle)) {
-            return false;
-        }
-
+        if (this == obj) return true;
+        if (!(obj instanceof Vehicle)) return false;
         Vehicle other = (Vehicle) obj;
-
         return Objects.equals(color, other.color)
                 && type == other.type
                 && numberOfSeats == other.numberOfSeats
@@ -103,6 +94,4 @@ public class Vehicle {
     public int hashCode() {
         return Objects.hash(type, color, numberOfSeats, tareWeight, maxAllowedWeight);
     }
-
-
 }

@@ -21,9 +21,7 @@ public class Stock<T> {
 
         int quantity = inventory.get(item);
 
-        if (quantity <= 1) {
-            inventory.remove(item);
-        } else {
+        if (quantity > 0) {
             inventory.put(item, quantity - 1);
         }
     }

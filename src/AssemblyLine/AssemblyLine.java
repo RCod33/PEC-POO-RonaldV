@@ -3,6 +3,7 @@ package AssemblyLine;
 import DataStore.DataStore;
 import Observers.AssemblyLineObserver;
 import Vehicles.Vehicle;
+import Vehicles.VehicleType;
 import Workers.Operator;
 
 import java.util.*;
@@ -10,14 +11,16 @@ import java.util.*;
 public class AssemblyLine {
 
     private final DataStore dataStore;
+    private final VehicleType lineType;          // tipo de cadena (para marcar el vehículo)
     private List<AssemblyModule> modules = new ArrayList<>();
     private List<AssemblyLineObserver> observers = new ArrayList<>();
     private Queue<Vehicle> pendingVehicles = new LinkedList<>();
     private Queue<Vehicle> finishedVehicles = new LinkedList<>();
     private LineConfig config;
 
-    public AssemblyLine(DataStore dataStore) {
+    public AssemblyLine(DataStore dataStore, VehicleType lineType) {
         this.dataStore = dataStore;
+        this.lineType  = lineType;
         for (AssemblyPhase phase : AssemblyPhase.values()) {
             modules.add(new AssemblyModule(phase));
         }
@@ -32,8 +35,7 @@ public class AssemblyLine {
     }
 
     public void setModule(AssemblyPhase phase, Operator operator) {
-        AssemblyModule module = new AssemblyModule(phase, operator);
-        modules.set(phase.ordinal(), module);
+        modules.set(phase.ordinal(), new AssemblyModule(phase, operator));
     }
 
     public List<AssemblyModule> getModules() {
@@ -78,16 +80,17 @@ public class AssemblyLine {
 
             if (!finished) continue;
 
-            Vehicle car = current.getVehicle();
+            Vehicle car   = current.getVehicle();
             AssemblyPhase phase = current.getPhase();
 
-            // Polimorfismo: cada fase sabe qué componente consumir
             if (car != null) {
                 phase.apply(car, config, dataStore, observers);
             }
 
             if (i == modules.size() - 1) {
                 Vehicle finishedCar = current.releaseVehicle();
+                // Registrar fecha y línea de ensamblaje
+                finishedCar.markAssembled(lineType);
                 finishedVehicles.add(finishedCar);
                 for (AssemblyLineObserver o : observers)
                     o.onVehicleFinished(finishedCar);
@@ -95,7 +98,6 @@ public class AssemblyLine {
             }
 
             AssemblyModule next = modules.get(i + 1);
-
             if (next.isFree()) {
                 Vehicle v = current.releaseVehicle();
                 next.setVehicle(v);
@@ -113,24 +115,20 @@ public class AssemblyLine {
     }
 
     public List<String> getStatus() {
-
         List<String> status = new ArrayList<>();
         String[] names = {"CHASIS", "MOTOR", "TAPICERIA", "RUEDAS"};
-
         for (int i = 0; i < modules.size(); i++) {
             AssemblyModule m = modules.get(i);
-
             if (m == null || m.getVehicle() == null) {
                 status.add(names[i] + " -> VACIO");
             } else {
                 Vehicle v = m.getVehicle();
                 status.add(names[i] + " -> " + v.getColor()
-                        + " | Motor:" + (v.getEngine() != null ? "✔" : "✘")
-                        + " | Tap:" + (v.getUpholstery() != null ? "✔" : "✘")
-                        + " | Ruedas:" + (v.getWheel() != null ? "✔" : "✘"));
+                        + " | Motor:"  + (v.getEngine()     != null ? "✔" : "✘")
+                        + " | Tap:"    + (v.getUpholstery() != null ? "✔" : "✘")
+                        + " | Ruedas:" + (v.getWheel()      != null ? "✔" : "✘"));
             }
         }
-
         return status;
     }
 }

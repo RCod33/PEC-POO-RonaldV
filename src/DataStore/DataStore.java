@@ -29,7 +29,7 @@ public class DataStore {
 
     private DataStore() {
         for (VehicleType type : VehicleType.values()) {
-            assemblyLines.put(type, new AssemblyLine(this));
+            assemblyLines.put(type, new AssemblyLine(this, type));
         }
     }
 
@@ -102,14 +102,13 @@ public class DataStore {
         return result;
     }
 
-    public List<SystemAdministrator> getSystemAdministrators() {
-        List<SystemAdministrator> result = new ArrayList<>();
+    public SystemAdministrator getSystemAdministrator() {
         for (Worker worker : workers) {
             if (worker instanceof SystemAdministrator) {
-                result.add((SystemAdministrator) worker);
+                return (SystemAdministrator) worker;
             }
         }
-        return result;
+        return null;
     }
 
     // =========================
@@ -119,6 +118,21 @@ public class DataStore {
     public Stock<Vehicle> getVehicles() {
         return vehicles;
     }
+
+    public Stock<Vehicle> getPendingVehicles() {
+        Stock<Vehicle> pendingStock = new Stock<Vehicle>();
+
+        for (VehicleType type : VehicleType.values()) {
+            Collection<Vehicle> pendingVehiclesList = assemblyLines.get(type).getPendingVehicles();
+            for (Vehicle vehicle : pendingVehiclesList) {
+                pendingStock.add(vehicle);
+            }
+        }
+
+        return pendingStock;
+    }
+
+
 
     // =========================
     // Engines
